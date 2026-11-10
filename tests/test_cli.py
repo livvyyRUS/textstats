@@ -4,17 +4,23 @@ import os
 import tempfile
 import unittest
 
-from textstats.cli import main
+from textstats.cli import main, read_text
 
 
 class TestCliMissingFile(unittest.TestCase):
     def test_exit_code_and_message(self):
         stderr = io.StringIO()
         with contextlib.redirect_stderr(stderr):
-            with self.assertRaises(SystemExit) as ctx:
-                main(["no-such-file.txt"])
-        self.assertEqual(ctx.exception.code, 2)
+            code = main(["no-such-file.txt"])
+        self.assertEqual(code, 2)
         self.assertIn("файл не найден", stderr.getvalue())
+
+
+class TestReadText(unittest.TestCase):
+    def test_propagates_missing_file(self):
+        """read_text не управляет жизненным циклом процесса."""
+        with self.assertRaises(FileNotFoundError):
+            read_text("no-such-file.txt")
 
 
 class TestCliHappyPath(unittest.TestCase):

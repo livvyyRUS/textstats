@@ -29,17 +29,17 @@ def build_parser() -> argparse.ArgumentParser:
 def read_text(path: str | None, encoding: str = "utf-8") -> str:
     if path is None:
         return sys.stdin.read()
-    try:
-        with open(path, encoding=encoding) as fh:
-            return fh.read()
-    except FileNotFoundError:
-        print(f"textstats: файл не найден: {path}", file=sys.stderr)
-        raise SystemExit(2) from None
+    with open(path, encoding=encoding) as fh:
+        return fh.read()
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    text = read_text(args.path, args.encoding)
+    try:
+        text = read_text(args.path, args.encoding)
+    except FileNotFoundError:
+        print(f"textstats: файл не найден: {args.path}", file=sys.stderr)
+        return 2
     if args.json:
         payload = {
             "words": count_words(text),
