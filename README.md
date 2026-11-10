@@ -11,3 +11,12 @@ Python 3.10+ и никаких внешних зависимостей:
 ```bash
 python -m textstats.cli sample.txt
 ```
+
+## Пример вывода
+
+```bash
+$ python -m textstats.cli notes.md
+words: 9
+chars: 53
+top: # = 1
+```
