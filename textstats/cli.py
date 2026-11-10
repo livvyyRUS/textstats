@@ -3,12 +3,15 @@
 import argparse
 import sys
 
-from .core import count_chars, count_words
+from .core import count_chars, count_words, top_words
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="textstats", description="Подсчёт статистики текста"
+    )
+    parser.add_argument(
+        "--top", type=int, default=3, help="сколько частых слов показать"
     )
     parser.add_argument(
         "path", nargs="?", help="путь к файлу (по умолчанию читается stdin)"
@@ -28,6 +31,8 @@ def main(argv: list[str] | None = None) -> int:
     text = read_text(args.path)
     print(f"words: {count_words(text)}")
     print(f"chars: {count_chars(text)}")
+    for word, count in top_words(text, args.top):
+        print(f"top: {word} = {count}")
     return 0
 
 
