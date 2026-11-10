@@ -26,8 +26,12 @@ def build_parser() -> argparse.ArgumentParser:
 def read_text(path: str | None) -> str:
     if path is None:
         return sys.stdin.read()
-    with open(path, encoding="utf-8") as fh:
-        return fh.read()
+    try:
+        with open(path, encoding="utf-8") as fh:
+            return fh.read()
+    except FileNotFoundError:
+        print(f"textstats: файл не найден: {path}", file=sys.stderr)
+        raise SystemExit(2) from None
 
 
 def main(argv: list[str] | None = None) -> int:
