@@ -35,7 +35,11 @@ def read_text(path: str | None, encoding: str = "utf-8") -> str:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    text = read_text(args.path, args.encoding)
+    try:
+        text = read_text(args.path, args.encoding)
+    except FileNotFoundError:
+        print(f"textstats: файл не найден: {args.path}", file=sys.stderr)
+        return 2
     if args.json:
         payload = {
             "words": count_words(text),
