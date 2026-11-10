@@ -28,8 +28,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: TruffleHog (поиск секретов)
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          extra_args: --results=verified,unknown,unverified
+      - name: Установить TruffleHog
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b "$RUNNER_TEMP/bin"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+      - name: Сделать снимок дерева без .git
+        run: |
+          mkdir -p "$RUNNER_TEMP/tree"
+          git archive HEAD | tar -x -C "$RUNNER_TEMP/tree"
+      - name: Искать секреты в снимке
+        run: trufflehog filesystem "$RUNNER_TEMP/tree" --results=verified,unknown,unverified --fail --no-update
