@@ -18,21 +18,24 @@ def build_parser() -> argparse.ArgumentParser:
         "--top", type=int, default=3, help="сколько частых слов показать"
     )
     parser.add_argument(
+        "--encoding", default="utf-8", help="кодировка входного файла"
+    )
+    parser.add_argument(
         "path", nargs="?", help="путь к файлу (по умолчанию читается stdin)"
     )
     return parser
 
 
-def read_text(path: str | None) -> str:
+def read_text(path: str | None, encoding: str = "utf-8") -> str:
     if path is None:
         return sys.stdin.read()
-    with open(path, encoding="utf-8") as fh:
+    with open(path, encoding=encoding) as fh:
         return fh.read()
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    text = read_text(args.path)
+    text = read_text(args.path, args.encoding)
     if args.json:
         payload = {
             "words": count_words(text),
